@@ -1,0 +1,166 @@
+public class BSTree extends BTreePrinter{
+    Node root;
+
+    public static Node findKey(Node node, int search_key) {
+        if (node == null) {
+            return null;
+        }
+        if (node.key == search_key) {
+            return node;
+        }
+        if (search_key < node.key) {
+            return findKey(node.left, search_key);
+        } else {
+            return findKey(node.right, search_key);
+        }
+    }
+
+    public static Node findMin(Node node){
+        if (node.left==null){
+            return node;
+        }else{
+            return findMin(node.left);
+        }
+    }
+
+    public static Node findMax(Node node){
+        if (node.right==null){
+            return node;
+        }else{
+            return findMax(node.right);
+        }
+    }
+
+    public void insertKey(int key) {
+        // Pls implement this insertKey() using the recursive technique
+        // This is similiar to findKey() but can insert node to the null node
+        if (root == null) {
+          root = new Node(key);
+      } else {
+          insertKey(root, key);
+      }
+    }
+
+    public static void insertKey(Node node, int key) {
+        if (key < node.key) {
+            if (node.left == null) {
+                node.left = new Node(key);
+                node.left.parent = node; // Set parent for the new node
+            } else {
+                insertKey(node.left, key); // Recur on left subtree
+            }
+        } else if (key > node.key) {
+            if (node.right == null) {
+                node.right = new Node(key);
+                node.right.parent = node; // Set parent for the new node
+            } else {
+                insertKey(node.right, key); // Recur on right subtree
+            }
+        }
+    }
+    
+    public void deleteKey(int key) {
+        if (root == null) {
+            System.out.println("Empty Tree!!!"); 
+        } else {
+            Node delete = findKey(root, key); 
+            if (delete == null) {
+                System.out.println("Key not found!!!");
+            } else {
+                if (delete != root) {
+                    deleteKey(delete);
+                } else {
+                    if (delete.left == null && delete.right == null) {
+                        delete = null;
+                    } 
+                    else if (delete.left == null) {
+                        delete = delete.right; 
+                    } 
+                    else if (delete.right == null) {
+                        delete = delete.left; 
+                    } 
+                    else {
+                        Node deleteLastCase = findMin(delete.right);
+                        delete.key = deleteLastCase.key; 
+                        deleteKey(deleteLastCase); 
+                    }
+                    root = delete; 
+                }
+            }
+        }
+    }
+    
+    public static void deleteKey(Node node){
+        if (node.left == null && node.right == null) {
+            if (node.key < node.parent.key) {
+                node.parent.left = null; // 1. 
+            } else {
+                node.parent.right = null; // 2.
+            }
+        } 
+        else if (node.left == null) {
+            if (node.key < node.parent.key) {
+                node.parent.left = node.right; // 3.
+            } else {
+                node.parent.right = node.right; // 4.
+            }
+            node.right.parent = node.parent;
+        } 
+        else if (node.right == null) {
+            if (node.key < node.parent.key) {
+                node.parent.left = node.left; // 5. 
+            } else {
+                node.parent.right = node.left; // 6. 
+            }
+            node.left.parent = node.parent; 
+        } 
+        // 7.
+        else {
+            Node delete = findMin(node.right); 
+            node.key = delete.key; 
+            deleteKey(delete); 
+        } 
+    }
+    
+    public static boolean isMergeable(Node r1, Node r2) {
+        if (findMax(r1).key < findMin(r2).key){
+            return true;
+        }else return false; 
+    }
+
+    public static Node mergeWithRoot(Node r1, Node r2, Node t){
+        if (isMergeable(r1, r2)) {
+            t.left = r1; // Set r1 as left child
+            if (r1 != null) {
+                r1.parent = t; // Update parent reference for r1
+            }
+            t.right = r2; // Set r2 as right child
+            if (r2 != null) {
+                r2.parent = t; // Update parent reference for r2
+            }
+            return t;
+        } else {
+            System.out.println("All nodes in T1 must be smaller than all nodes from T2");
+            return null;
+        }
+    }
+    
+    public void merge(BSTree tree2){
+        if (isMergeable(this.root, tree2.root)){
+            Node t = new Node(findMax(this.root).key);
+            this.deleteKey(t.key);
+            this.root = mergeWithRoot(this.root, tree2.root, t);
+        }else{
+            System.out.println("All nodes in T1 must be smaller than all nodes from T2");
+        }
+    }
+
+    // This function is complete, no need to edit
+    public void printTree() {
+        if (root == null) {
+            System.out.println("Empty tree!!!");
+        } else {
+            super.printTree(root);
+        }
+    }
+}
