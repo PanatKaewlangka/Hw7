@@ -336,15 +336,16 @@ public static Node mergeWithRoot(Node r1, Node r2, Node t) { // เมธอด�
     }
 }
     
-    public void merge(AVLTree tree2) {
-        if (isMergeable(this.root, tree2.root)){
-            Node t = new Node(findMax(this.root).key);
-            this.deleteKey(t.key);
-            this.root = mergeWithRoot(this.root, tree2.root, t);
-        }else{
-            System.out.println("All nodes in T1 must be smaller than all nodes from T2");
-        }
+    public void merge(AVLTree tree2) { // เมธอดสำหรับรวมต้นไม้ AVL tree2 เข้ากับต้นไม้ปัจจุบัน
+    // ตรวจสอบว่าต้นไม้ทั้งสองสามารถรวมได้หรือไม่
+    if (isMergeable(this.root, tree2.root)){ // หากต้นไม้ปัจจุบันและ tree2 สามารถรวมได้
+        Node t = new Node(findMax(this.root).key); // สร้างโหนดใหม่ t โดยใช้ค่าสูงสุดจากต้นไม้ปัจจุบัน
+        this.deleteKey(t.key); // ลบโหนดที่มีค่าสูงสุดออกจากต้นไม้ปัจจุบัน
+        this.root = mergeWithRoot(this.root, tree2.root, t); // รวมต้นไม้ปัจจุบันกับ tree2 โดยใช้ t เป็นรากใหม่
+    }else{ // หากไม่สามารถรวมได้
+        System.out.println("All nodes in T1 must be smaller than all nodes from T2"); // แสดงข้อความว่าไม่สามารถรวมได้
     }
+}
 
     // This function is complete, no need to edit
     public static int height(Node node){
