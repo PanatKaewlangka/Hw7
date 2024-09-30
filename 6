@@ -300,41 +300,41 @@ public class AVLTree extends BTreePrinter{
         }
     }
     
-    public static boolean isMergeable(Node r1, Node r2) {
-        if (r1 == null && r2 != null) return true;
-        if (r1 != null && r2 == null) return true;
-        if (findMax(r1).key < findMin(r2).key){
-            return true;
-        }else return false; 
-    }
+public static boolean isMergeable(Node r1, Node r2) { // เมธอดตรวจสอบว่าสามารถรวม node r1 และ r2 ได้หรือไม่
+    if (r1 == null && r2 != null) return true; // หาก r1 เป็น null แต่ r2 ไม่เป็น null สามารถรวมได้
+    if (r1 != null && r2 == null) return true; // หาก r2 เป็น null แต่ r1 ไม่เป็น null สามารถรวมได้
+    if (findMax(r1).key < findMin(r2).key){ // หากค่ามากสุดของ r1 น้อยกว่าค่าต่ำสุดของ r2
+        return true; // สามารถรวมได้
+    }else return false; // ไม่สามารถรวมได้
+}
 
-    public static Node mergeWithRoot(Node r1, Node r2, Node t) {
-        if(r1 == null && r2 == null) return t;
-        if (isMergeable(r1, r2)) {
-            if (Math.abs(height(r1) - height(r2)) <= 1) {
-                t.left = r1;
-                t.right = r2;
-                return t; 
-            } else if (height(r1) > height(r2)) {
-                Node r = mergeWithRoot(r1.right, r2, t);
-                r1.right = r;
-                r.parent = r1;
-                AVLTree tree = new AVLTree(r1);
-                rebalance(tree, r1);
-                return tree.root;
-            } else {
-                Node r = mergeWithRoot(r1, r2.left, t);
-                r2.left = r; 
-                r.parent = r2;
-                AVLTree tree = new AVLTree(r2);
-                rebalance(tree, r2);
-                return tree.root;
-            }
-        } else {
-            System.out.println("All nodes in T1 must be smaller than all nodes from T2");
-            return null;
+public static Node mergeWithRoot(Node r1, Node r2, Node t) { // เมธอดรวมต้นไม้ r1 และ r2 โดยใช้ t เป็นรากใหม่
+    if(r1 == null && r2 == null) return t; // หากทั้ง r1 และ r2 เป็น null ให้คืนค่า t
+    if (isMergeable(r1, r2)) { // ตรวจสอบว่ารวมได้หรือไม่
+        if (Math.abs(height(r1) - height(r2)) <= 1) { // หากความสูงของ r1 และ r2 แตกต่างกันไม่เกิน 1
+            t.left = r1; // กำหนด r1 เป็นลูกซ้ายของ t
+            t.right = r2; // กำหนด r2 เป็นลูกขวาของ t
+            return t; // คืนค่า t
+        } else if (height(r1) > height(r2)) { // หาก r1 สูงกว่าหรือเท่ากับ r2
+            Node r = mergeWithRoot(r1.right, r2, t); // รวมลูกขวาของ r1 กับ r2
+            r1.right = r; // กำหนดลูกขวาของ r1 เป็นผลลัพธ์
+            r.parent = r1; // กำหนดพ่อของ r เป็น r1
+            AVLTree tree = new AVLTree(r1); // สร้าง AVLTree ใหม่ด้วย r1
+            rebalance(tree, r1); // ปรับสมดุลต้นไม้
+            return tree.root; // คืนค่า root ของต้นไม้
+        } else { // หาก r2 สูงกว่าหรือเท่ากับ r1
+            Node r = mergeWithRoot(r1, r2.left, t); // รวม r1 กับลูกซ้ายของ r2
+            r2.left = r; // กำหนดลูกซ้ายของ r2 เป็นผลลัพธ์
+            r.parent = r2; // กำหนดพ่อของ r เป็น r2
+            AVLTree tree = new AVLTree(r2); // สร้าง AVLTree ใหม่ด้วย r2
+            rebalance(tree, r2); // ปรับสมดุลต้นไม้
+            return tree.root; // คืนค่า root ของต้นไม้
         }
+    } else { // หากไม่สามารถรวมได้
+        System.out.println("All nodes in T1 must be smaller than all nodes from T2"); // แสดงข้อความข้อผิดพลาด
+        return null; // คืนค่า null
     }
+}
     
     public void merge(AVLTree tree2) {
         if (isMergeable(this.root, tree2.root)){

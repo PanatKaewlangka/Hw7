@@ -341,36 +341,37 @@ public class AVLTree extends BTreePrinter{
         }
     }
 
-    // Fix this function
-    public Node[] split(int key) {
-        return split(this.root, key); // This is incorrect, fix this by calling the static split
+// Fix this function
+public Node[] split(int key) { // เมธอดสำหรับแยกต้นไม้ที่รากโดยใช้ค่า key
+    return split(this.root, key); // เรียกใช้ฟังก์ชัน static split โดยใช้รากของต้นไม้ปัจจุบันเป็นพารามิเตอร์ (มีปัญหาอยู่)
+}
+
+// Fix this function
+public static Node[] split(Node r, int key) { // ฟังก์ชัน static สำหรับแยกต้นไม้ที่ราก r โดยใช้ค่า key
+    Node[] arr = new Node[2]; // สร้างอาเรย์เพื่อเก็บผลลัพธ์ที่แยกได้
+    // ทำอะไรบางอย่าง
+    if (r == null) { // หาก r เป็น null
+        arr[0] = null; // กำหนดสมาชิกแรกในอาเรย์เป็น null
+        arr[1] = null; // กำหนดสมาชิกที่สองในอาเรย์เป็น null
+        return arr; // คืนค่าอาเรย์
+    }else if(key < r.key){ // หาก key น้อยกว่า key ของ r
+        arr = split(r.left, key); // เรียกใช้ฟังก์ชัน split กับลูกซ้ายของ r
+        if(arr[1] != null) arr[1].parent = null; // หากสมาชิกที่สองในอาเรย์ไม่เป็น null ให้กำหนดพ่อของมันเป็น null
+        if(r.right != null) r.right.parent = null; // หากลูกขวาของ r ไม่เป็น null ให้กำหนดพ่อของลูกขวาเป็น null
+        Node R3 = mergeWithRoot(arr[1], r.right,r); // รวมลูกขวาของ r กับสมาชิกที่สองในอาเรย์และกำหนดให้ r เป็นรากใหม่
+        arr[1] = R3; // กำหนดสมาชิกที่สองในอาเรย์เป็น R3
+        return arr; // คืนค่าอาเรย์
+    }else if(key >= r.key){ // หาก key มากกว่าหรือเท่ากับ key ของ r
+        arr = split(r.right, key); // เรียกใช้ฟังก์ชัน split กับลูกขวาของ r
+        if(arr[0] != null) arr[0].parent = null; // หากสมาชิกแรกในอาเรย์ไม่เป็น null ให้กำหนดพ่อของมันเป็น null
+        if(r.left != null) r.left.parent = null; // หากลูกซ้ายของ r ไม่เป็น null ให้กำหนดพ่อของลูกซ้ายเป็น null
+        Node R4 = mergeWithRoot(r.left, arr[0],r); // รวมลูกซ้ายของ r กับสมาชิกแรกในอาเรย์และกำหนดให้ r เป็นรากใหม่
+        arr[0] = R4; // กำหนดสมาชิกแรกในอาเรย์เป็น R4
+        return arr; // คืนค่าอาเรย์
     }
-    
-    // Fix this function
-    public static Node[] split(Node r, int key) { 
-        Node[] arr = new Node[2];
-        // Do something
-        if (r == null) {
-            arr[0] = null;
-            arr[1] = null;
-            return arr;
-        }else if(key < r.key){
-            arr = split(r.left, key);
-            if(arr[1] != null) arr[1].parent = null;
-            if(r.right != null) r.right.parent = null;
-            Node R3 = mergeWithRoot(arr[1], r.right,r);
-            arr[1] = R3;
-            return arr;
-        }else if(key >= r.key){
-            arr = split(r.right, key);
-            if(arr[0] != null) arr[0].parent = null;
-            if(r.left != null) r.left.parent = null;
-            Node R4 = mergeWithRoot(r.left, arr[0],r);
-            arr[0] = R4;
-            return arr;
-        }
-        return arr;
-    }
+    return arr; // คืนค่าอาเรย์ (กรณีอื่นๆ)
+}
+
 
     // This function is complete, no need to edit
     public static int height(Node node){
